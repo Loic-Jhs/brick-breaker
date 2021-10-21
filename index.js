@@ -2,11 +2,11 @@ let canvas = document.getElementById("myCanvas");
 let ctx = canvas.getContext("2d");
 
 //position de la balle 
+let ballRadius = 10;
 let x = canvas.width/2;
 let y = canvas.height-30;
 let dx = 2;
 let dy = -2;
-let ballRadius = 10;
 
 //Hauteaur & largeur + point départ de la raquette 
 let paddleHeight = 10;
@@ -21,23 +21,24 @@ document.addEventListener("keyup", keyUpHandler, false);
 
 //Lorsque la touche est enfoncée 
 function keyDownHandler(e) {
-  if(e.key == "Right" || e.key == "ArrowRight") {
+  if(e.keyCode == 39) {
     rightPressed = true;
   }
-  else if(e.key == "Left" || e.key == "ArrowLeft") {
+  else if(e.keyCode == 37) {
     leftPressed = true;
   }
 }
 
-//Lorsque la touche cesse d'être enfoncée 
+//Lorsque la touche cesse d'être enfoncée
 function keyUpHandler(e) {
-  if(e.key == "Right" || e.key == "ArrowRight") {
+  if(e.keyCode == 39) {
     rightPressed = false;
   }
-  else if(e.key == "Left" || e.key == "ArrowLeft") {
+  else if(e.keyCode == 37) {
     leftPressed = false;
   }
 }
+
 
 //fonction qui dessine la balle
 function drawBall() {
@@ -71,31 +72,35 @@ function draw() {
   }
 
   //Conditions qui fait rebondir la balle de haut en bas
-  if(y + dy > canvas.height || y + dy < ballRadius) {
+  if(y + dy < ballRadius) {
     dy = -dy;
+  } 
+  //Détecte si la balle arrive bien entre les 2 bords de la raquette
+  else if(y + dy > canvas.height-ballRadius) {
+    if(x > paddleX && x < paddleX + paddleWidth) {
+      dy = -dy;
+    }
+    //game over si la balle touche le bas du canva (en dehors de la raquette)
+    else {
+      alert("GAME OVER");
+      document.location.reload();
+      clearInterval(interval);
+    }
+  }
+
+  //Si la touche droite est enfoncée, 
+  //la raquette se déplacera de 7 pixels vers la droite
+  if(rightPressed && paddleX < canvas.width-paddleWidth) {
+    paddleX += 7;
+  }
+  //Si la touche gauche est enfoncée, 
+  //la raquette se déplacera de 7 pixels vers la gauche
+  else if(leftPressed && paddleX > 0) {
+    paddleX -= 7;
   }
 
   x += dx;
   y += dy;
-
-  //Si la touche droite est enfoncée, 
-  //la raquette se déplacera de sept pixels vers la droite
-  if(rightPressed) {
-    paddleX += 7;
-    //Condition pour ne pas que la raquette dépasse du canva sur la droite 
-    if (paddleX + paddleWidth > canvas.width){
-      paddleX = canvas.width - paddleWidth;
-    }
-  }
-  //Si la touche gauche est enfoncée, 
-  //la raquette se déplacera de sept pixels vers la gauche
-  else if(leftPressed) {
-    paddleX -= 7;
-    //Condition pour ne pas que la raquette dépasse du canva sur la gauche
-    if (paddleX < 0){
-      paddleX = 0;
-    }
-  }
 }
 
-setInterval(draw, 10);
+let interval = setInterval(draw, 10);
