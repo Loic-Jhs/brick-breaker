@@ -1,2 +1,2 @@
 # brick-breaker
-Petit jeu de casse brique 
+Petit jeu de casse brique :joystick:
