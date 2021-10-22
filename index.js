@@ -79,8 +79,6 @@ function draw() {
   drawBall();
   drawPaddle();
 
-  console.log();
-
   //Conditions qui fait rebondir la balle de gauche à droite
   if(x + dx > canvas.width || x + dx < ballRadius) {
     dx = -dx;
