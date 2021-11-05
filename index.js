@@ -20,6 +20,26 @@ let rightPressed = false;
 let leftPressed = false;
 let spacePressed = false;
 
+//Variable des briques
+let brickRowCount = 5;
+let brickColumnCount = 3;
+let brickWidth = 75;
+let brickHeight = 20;
+let brickPadding = 10;
+let brickOffsetTop = 30;
+let brickOffsetLeft = 30;
+
+//On parcours un tableau à 2 dimensions, qui contient les colonnes de briques (c)
+//et qui à leur tour contiendront les lignes de briques (r)
+//qui chacune contiendront un objet défini par une position x et y pour afficher chaque brique sur l'écran
+let bricks = [];
+for(let c=0; c<brickColumnCount; c++) {
+  bricks[c] = [];
+  for(let r=0; r<brickRowCount; r++) {
+    bricks[c][r] = { x: 0, y: 0 };
+  }
+}
+
 //écouteur d'évenement sur les fonctions des touches (keyDownHandler & keyUpHandler)
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
@@ -52,7 +72,6 @@ function keyUpHandler(e) {
   }
 }
 
-
 //fonction qui dessine la balle
 function drawBall() {
   ctx.beginPath();
@@ -69,13 +88,32 @@ function drawPaddle() {
   ctx.fillStyle = "#0095DD";
   ctx.fill();
   ctx.closePath();
-} 
+}
+
+//On parcour toutes les briques dans le tableau et on les dessine sur l'écran
+function drawBricks() {
+  for(let c=1; c<brickColumnCount; c++) {
+    for(let r=1; r<brickRowCount; r++) {
+      //calculs qui définissent la position x et y de chaque brique à chaque passage dans la boucle
+      let brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+      let brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
+      bricks[c][r].x = brickX;
+      bricks[c][r].y = brickY;
+      ctx.beginPath();
+      ctx.rect(brickX, brickY, brickWidth, brickHeight);
+      ctx.fillStyle = "#0095DD";
+      ctx.fill();
+      ctx.closePath();
+    }
+  }
+}
 
 //fonction appelée toutes les 10mlsec pour redessiner la balle 
 //la balle est dessiné, effacer puis redessiné 
 //afin de donner l'impression d'un mouvement. 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawBricks();
   drawBall();
   drawPaddle();
 
@@ -94,6 +132,7 @@ function draw() {
     if(x > paddleX && x < paddleX + paddleWidth) {
       dy = -dy;
     }
+
     //Sinon game over (en dehors de la raquette)
     else {
       alert("GAME OVER");
